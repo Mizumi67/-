@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Quiz - パンミセ</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .game-title {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .game-subtitle {
+            color: #8D99AE;
+            font-size: 1.1rem;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        /* Selection Screen */
+        .game-selection {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .game-type-btn {
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .game-type-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .game-description {
+            background: #F8F9FA;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Settings Screen */
+        .settings-group {
+            margin-bottom: 25px;
+        }
+        
+        .settings-group label {
+            display: block;
+            font-weight: 600;
+            color: #2B2D42;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .settings-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .settings-info {
+            color: #8D99AE;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #F8F9FA;
+            color: #2B2D42;
+            border: 2px solid #E0E0E0;
+        }
+        
+        .btn-secondary:hover {
+            background: #E0E0E0;
+        }
+        
+        /* Game Screen */
+        .game-status {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .status-item {
+            background: #F8F9FA;
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .status-label {
+            font-size: 0.9rem;
+            color: #8D99AE;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2B2D42;
+        }
+        
+        .timer-warning {
+            color: #E63946 !important;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .question-card {
+            background: linear-gradient(135deg, #FCE4EC 0%, #FFF9C4 100%);
+            padding: 50px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .question-text {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 5rem;
+            color: #2B2D42;
+            margin-bottom: 20px;
+        }
+        
+        .question-label {
+            color: #8D99AE;
+            font-size: 1.1rem;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.3rem;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .answer-feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .feedback-correct {
+            background: #D4EDDA;
+            color: #155724;
+        }
+        
+        .feedback-wrong {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+        
+        /* Result Screen */
+        .result-card {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .result-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        
+        .result-grade {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .result-score {
+            font-size: 2rem;
+            color: #2B2D42;
+            margin-bottom: 30px;
+        }
+        
+        .result-stats {
+            background: #F8F9FA;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #8D99AE;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: #2B2D42;
+        }
+        
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+            }
+            
+            .question-text {
+                font-size: 3.5rem;
+            }
+            
+            .status-item {
+                flex: 1 1 45%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">ゲーム</h1>
+            <p class="game-subtitle">Quiz Hiragana, Katakana & Kotoba</p>
+        </div>
+        
+        <!-- Selection Screen -->
+        <div id="selection-screen" class="screen active">
+            <div class="game-description">
+                <p><strong>Cara Bermain:</strong></p>
+                <p>Pilih jenis game yang ingin kamu mainkan. Atur jumlah soal dan waktu, lalu mulai quiz! Ketik jawaban yang benar, dan sistem akan otomatis lanjut ke soal berikutnya.</p>
+            </div>
+            
+            <div class="game-selection">
+                <button class="game-type-btn" onclick="selectGameType('kana')">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">あア</div>
+                    Hiragana & Katakana
+                </button>
+                <button class="game-type-btn" onclick="selectGameType('kotoba')">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">ことば</div>
+                    Kotoba Quiz
+                </button>
+            </div>
+        </div>
+        
+        <!-- Settings Screen -->
+        <div id="settings-screen" class="screen">
+            <div class="settings-group">
+                <label for="question-count">Jumlah Soal</label>
+                <input type="number" id="question-count" min="5" max="100" value="20">
+                <div class="settings-info">Maksimal 100 soal</div>
+            </div>
+            
+            <div class="settings-group">
+                <label for="time-limit">Batas Waktu (detik)</label>
+                <input type="number" id="time-limit" min="10" max="120" value="60">
+                <div class="settings-info">Maksimal 120 detik (2 menit)</div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="startGame()">Mulai Game!</button>
+            <button class="btn btn-secondary" onclick="backToSelection()">Kembali</button>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="game-status">
+                <div class="status-item">
+                    <div class="status-label">Waktu</div>
+                    <div class="status-value" id="timer">60</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Soal</div>
+                    <div class="status-value"><span id="current-question">1</span>/<span id="total-questions">20</span></div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Benar</div>
+                    <div class="status-value" id="correct-count">0</div>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-text" id="question-char">あ</div>
+                <div class="question-label">Tuliskan bacaan huruf di atas</div>
+            </div>
+            
+            <input type="text" class="answer-input" id="answer-input" placeholder="Ketik jawabanmu..." autocomplete="off">
+            <div class="answer-feedback" id="feedback"></div>
+        </div>
+        
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <div class="result-card">
+                <div class="result-icon" id="result-icon">🎉</div>
+                <div class="result-grade" id="result-grade">A+</div>
+                <div class="result-score">
+                    <span id="final-correct">15</span> / <span id="final-total">20</span> Benar
+                </div>
+                
+                <div class="result-stats">
+                    <div class="stat-row">
+                        <span class="stat-label">Total Soal</span>
+                        <span class="stat-value" id="stat-total">20</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Jawaban Benar</span>
+                        <span class="stat-value" id="stat-correct">15</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Jawaban Salah</span>
+                        <span class="stat-value" id="stat-wrong">5</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Akurasi</span>
+                        <span class="stat-value" id="stat-accuracy">75%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Waktu Digunakan</span>
+                        <span class="stat-value" id="stat-time">45 detik</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="playAgain()">Main Lagi</button>
+                <button class="btn btn-secondary" onclick="backToSelection()">Pilih Game Lain</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="data.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
