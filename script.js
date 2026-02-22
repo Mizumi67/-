@@ -145,28 +145,113 @@ document.addEventListener('click', (e) => {
 
 // ===== Render Kotoba =====
 let currentKotoba = [...kotoba];
+let currentFilter = 'all';
+let currentPage = 0;
+const ITEMS_PER_PAGE = 20; // 20 cards per page (5 kolom x 4 baris)
 
 function renderKotoba(kotobaList = currentKotoba) {
     const container = document.getElementById('kotoba-list');
     if (!container) return;
-    
+
     container.innerHTML = '';
-    
+
     if (kotobaList.length === 0) {
         container.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: #8D99AE;">Tidak ada kotoba yang ditemukan</p>';
+        removePagination();
         return;
     }
-    
-    kotobaList.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'kotoba-card';
-        card.innerHTML = `
-            <div class="kotoba-jp">${item.jp}</div>
-            <div class="kotoba-romaji">${item.romaji}</div>
-            <div class="kotoba-meaning">${item.meaning}</div>
-        `;
-        container.appendChild(card);
+
+    if (currentFilter === 'all') {
+        // Mode pagination untuk tab Semua
+        const totalPages = Math.ceil(kotobaList.length / ITEMS_PER_PAGE);
+        if (currentPage >= totalPages) currentPage = 0;
+
+        const start = currentPage * ITEMS_PER_PAGE;
+        const pageItems = kotobaList.slice(start, start + ITEMS_PER_PAGE);
+
+        pageItems.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'kotoba-card';
+            card.innerHTML = `
+                <div class="kotoba-jp">${item.jp}</div>
+                <div class="kotoba-romaji">${item.romaji}</div>
+                <div class="kotoba-meaning">${item.meaning}</div>
+            `;
+            container.appendChild(card);
+        });
+
+        renderPagination(totalPages, kotobaList);
+    } else {
+        // Mode normal untuk tab kategori — tampil semua tanpa pagination
+        removePagination();
+        kotobaList.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'kotoba-card';
+            card.innerHTML = `
+                <div class="kotoba-jp">${item.jp}</div>
+                <div class="kotoba-romaji">${item.romaji}</div>
+                <div class="kotoba-meaning">${item.meaning}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+}
+
+function renderPagination(totalPages, kotobaList) {
+    removePagination();
+    if (totalPages <= 1) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'kotoba-pagination';
+    wrapper.id = 'kotoba-pagination';
+
+    const prevBtn = document.createElement('button');
+    prevBtn.type = 'button';
+    prevBtn.className = 'pagination-btn' + (currentPage === 0 ? ' disabled' : '');
+    prevBtn.innerHTML = '&#8592;';
+    prevBtn.disabled = currentPage === 0;
+    prevBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentPage > 0) {
+            const scrollY = window.scrollY;
+            currentPage--;
+            renderKotoba(kotobaList);
+            window.scrollTo({ top: scrollY, behavior: 'instant' });
+        }
     });
+
+    const pageInfo = document.createElement('span');
+    pageInfo.className = 'pagination-info';
+    pageInfo.textContent = `${currentPage + 1} / ${totalPages}`;
+
+    const nextBtn = document.createElement('button');
+    nextBtn.type = 'button';
+    nextBtn.className = 'pagination-btn' + (currentPage === totalPages - 1 ? ' disabled' : '');
+    nextBtn.innerHTML = '&#8594;';
+    nextBtn.disabled = currentPage === totalPages - 1;
+    nextBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentPage < totalPages - 1) {
+            const scrollY = window.scrollY;
+            currentPage++;
+            renderKotoba(kotobaList);
+            window.scrollTo({ top: scrollY, behavior: 'instant' });
+        }
+    });
+
+    wrapper.appendChild(prevBtn);
+    wrapper.appendChild(pageInfo);
+    wrapper.appendChild(nextBtn);
+
+    const gridContainer = document.getElementById('kotoba-list');
+    gridContainer.insertAdjacentElement('afterend', wrapper);
+}
+
+function removePagination() {
+    const existing = document.getElementById('kotoba-pagination');
+    if (existing) existing.remove();
 }
 
 // ===== Kotoba Filters =====
@@ -178,15 +263,28 @@ function setupKotobaFilters() {
             filterBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            const filter = btn.getAttribute('data-filter');
-            
-            if (filter === 'all') {
+            currentFilter = btn.getAttribute('data-filter');
+            currentPage = 0; // reset ke halaman pertama saat ganti filter
+
+            // Jika ada pencarian aktif, tetap filter berdasarkan search
+            const searchTerm = document.getElementById('kotoba-search').value.toLowerCase();
+
+            if (currentFilter === 'all') {
                 currentKotoba = [...kotoba];
             } else {
-                currentKotoba = kotoba.filter(k => k.category === filter);
+                currentKotoba = kotoba.filter(k => k.category === currentFilter);
+            }
+
+            let displayed = currentKotoba;
+            if (searchTerm) {
+                displayed = currentKotoba.filter(k =>
+                    k.jp.includes(searchTerm) ||
+                    k.romaji.toLowerCase().includes(searchTerm) ||
+                    k.meaning.toLowerCase().includes(searchTerm)
+                );
             }
             
-            renderKotoba(currentKotoba);
+            renderKotoba(displayed);
         });
     });
 }
@@ -197,6 +295,7 @@ function setupKotobaSearch() {
     
     searchInput.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
+        currentPage = 0; // reset halaman saat search
         
         const filtered = currentKotoba.filter(k => {
             return k.jp.includes(searchTerm) ||

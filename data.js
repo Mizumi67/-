@@ -387,6 +387,6 @@ const kotoba = [
     { jp: 'シャツ', romaji: 'shatsu', meaning: 'Baju', category: 'katakana' },
     { jp: 'ズボン', romaji: 'zubon', meaning: 'Celana', category: 'katakana' },
     { jp: 'スカート', romaji: 'sukaato', meaning: 'Rok', category: 'katakana' },
-    { jp: 'くつ', romaji: 'kutsu', meaning: 'Sepatu', category: 'katakana' },
+    { jp: 'ブーツ', romaji: 'buutsu', meaning: 'Sepatu boot', category: 'katakana' },
     { jp: 'ソックス', romaji: 'sokkusu', meaning: 'Kaos kaki', category: 'katakana' }
 ];

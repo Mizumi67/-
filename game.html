@@ -16,12 +16,41 @@
         
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FCE4EC 0%, #FFF9C4 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Floating background characters */
+        #bg-characters {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-char-bg {
+            position: absolute;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 4rem;
+            color: rgba(230, 57, 70, 0.12);
+            font-weight: 300;
+            animation: floatFade 8s ease-in-out forwards;
+        }
+
+        @keyframes floatFade {
+            0%   { opacity: 0; transform: translateY(20px) scale(0.8); }
+            20%  { opacity: 1; transform: translateY(0) scale(1); }
+            80%  { opacity: 1; transform: translateY(-20px) scale(1); }
+            100% { opacity: 0; transform: translateY(-40px) scale(0.8); }
         }
         
         .game-container {
@@ -30,7 +59,9 @@
             padding: 40px;
             max-width: 600px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(230, 57, 70, 0.15);
+            position: relative;
+            z-index: 1;
         }
         
         .game-header {
@@ -41,7 +72,7 @@
         .game-title {
             font-family: 'Noto Sans JP', sans-serif;
             font-size: 2.5rem;
-            color: #667eea;
+            color: #E63946;
             margin-bottom: 10px;
         }
         
@@ -66,7 +97,7 @@
         
         .game-type-btn {
             padding: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF6B6B 0%, #E63946 100%);
             color: white;
             border: none;
             border-radius: 15px;
@@ -78,7 +109,7 @@
         
         .game-type-btn:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(230, 57, 70, 0.35);
         }
         
         .game-description {
@@ -113,7 +144,7 @@
         
         .settings-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #E63946;
         }
         
         .settings-info {
@@ -135,13 +166,13 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF6B6B 0%, #E63946 100%);
             color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(230, 57, 70, 0.35);
         }
         
         .btn-secondary {
@@ -218,7 +249,7 @@
             width: 100%;
             padding: 20px;
             font-size: 1.3rem;
-            border: 3px solid #667eea;
+            border: 3px solid #E63946;
             border-radius: 10px;
             text-align: center;
             font-weight: 600;
@@ -226,8 +257,8 @@
         
         .answer-input:focus {
             outline: none;
-            border-color: #764ba2;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            border-color: #c92a35;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2);
         }
         
         .answer-feedback {
@@ -262,7 +293,7 @@
         .result-grade {
             font-size: 4rem;
             font-weight: 700;
-            color: #667eea;
+            color: #E63946;
             margin-bottom: 20px;
         }
         
@@ -299,6 +330,101 @@
             color: #2B2D42;
         }
         
+        /* Dark/Light Mode Toggle */
+        .game-theme-toggle {
+            position: fixed;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid #E63946;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(6px);
+        }
+
+        .game-theme-toggle:hover {
+            transform: translateY(-2px);
+            background: rgba(230, 57, 70, 0.15);
+        }
+
+        /* Dark Mode - Body & Background */
+        body.dark-mode {
+            background: linear-gradient(135deg, #2D1B2E 0%, #1A1A2E 100%);
+        }
+
+        body.dark-mode .floating-char-bg {
+            color: rgba(230, 57, 70, 0.18);
+        }
+
+        /* Dark Mode - Game Container */
+        body.dark-mode .game-container {
+            background: #2D2D2D;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            color: #E8E8E8;
+        }
+
+        body.dark-mode .game-subtitle { color: #B0B0B0; }
+
+        body.dark-mode .game-description {
+            background: #3D3D3D;
+            color: #E8E8E8;
+        }
+
+        body.dark-mode .settings-group label { color: #E8E8E8; }
+
+        body.dark-mode .settings-group input {
+            background: #3D3D3D;
+            border-color: #555;
+            color: #E8E8E8;
+        }
+
+        body.dark-mode .settings-info { color: #B0B0B0; }
+
+        body.dark-mode .btn-secondary {
+            background: #3D3D3D;
+            color: #E8E8E8;
+            border-color: #555;
+        }
+
+        body.dark-mode .btn-secondary:hover { background: #4D4D4D; }
+
+        body.dark-mode .status-item {
+            background: #3D3D3D;
+            color: #E8E8E8;
+        }
+
+        body.dark-mode .status-label { color: #B0B0B0; }
+        body.dark-mode .status-value { color: #E8E8E8; }
+
+        body.dark-mode .question-card {
+            background: linear-gradient(135deg, #3A1B2E 0%, #2D2040 100%);
+        }
+
+        body.dark-mode .question-text { color: #E8E8E8; }
+        body.dark-mode .question-label { color: #B0B0B0; }
+
+        body.dark-mode .answer-input {
+            background: #3D3D3D;
+            color: #E8E8E8;
+            border-color: #E63946;
+        }
+
+        body.dark-mode .result-stats {
+            background: #3D3D3D;
+        }
+
+        body.dark-mode .stat-row { border-color: #555; }
+        body.dark-mode .stat-label { color: #B0B0B0; }
+        body.dark-mode .stat-value { color: #E8E8E8; }
+        body.dark-mode .result-score { color: #E8E8E8; }
+
         @media (max-width: 600px) {
             .game-container {
                 padding: 20px;
@@ -314,7 +440,12 @@
         }
     </style>
 </head>
-<body>
+<body class="dark-mode">
+    <button class="game-theme-toggle" id="game-theme-toggle" title="Toggle Dark/Light Mode">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+    </button>
+    <div id="bg-characters"></div>
     <div class="game-container">
         <div class="game-header">
             <h1 class="game-title">ゲーム</h1>
@@ -424,5 +555,43 @@
     
     <script src="data.js"></script>
     <script src="game.js"></script>
+    <script>
+        // Dark mode toggle
+        (function() {
+            const btn = document.getElementById('game-theme-toggle');
+            btn.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+            });
+        })();
+
+        // Floating background characters animation
+        (function() {
+            const kanaChars = [
+                'あ','い','う','え','お','か','き','く','け','こ',
+                'さ','し','す','せ','そ','た','ち','つ','て','と',
+                'な','に','ぬ','ね','の','は','ひ','ふ','へ','ほ',
+                'ま','み','む','め','も','や','ゆ','よ','ら','り',
+                'る','れ','ろ','わ','を','ん',
+                'ア','イ','ウ','エ','オ','カ','キ','ク','ケ','コ',
+                'サ','シ','ス','セ','ソ','タ','チ','ツ','テ','ト',
+                'ナ','ニ','ヌ','ネ','ノ','ハ','ヒ','フ','ヘ','ホ',
+                'マ','ミ','ム','メ','モ','ヤ','ユ','ヨ','ラ','リ',
+                'ル','レ','ロ','ワ','ヲ','ン'
+            ];
+            function createFloatingChar() {
+                const container = document.getElementById('bg-characters');
+                if (!container) return;
+                const char = document.createElement('div');
+                char.className = 'floating-char-bg';
+                char.textContent = kanaChars[Math.floor(Math.random() * kanaChars.length)];
+                char.style.left = (Math.random() * 100) + '%';
+                char.style.top  = (Math.random() * 100) + '%';
+                container.appendChild(char);
+                setTimeout(() => { if (char.parentNode) char.parentNode.removeChild(char); }, 8000);
+            }
+            for (let i = 0; i < 3; i++) setTimeout(() => createFloatingChar(), i * 1000);
+            setInterval(createFloatingChar, 2500);
+        })();
+    </script>
 </body>
 </html>
